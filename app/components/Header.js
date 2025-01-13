@@ -38,7 +38,7 @@ export default function Header() {
 
         <ul className="hidden w-3/4 lg:flex items-center mr-4">
           <li><Link   className="mx-2 p-2" href={`/dashboard`}>Dashboard</Link></li>
-          <li><Link  className="mx-2 p-2" href={`/client`}>Client</Link></li>
+          <li><Link  className="mx-2 p-2" href={`/client`}>Clients</Link></li>
           <li>
             <Link  onClick={()=>setIsVisible(!isVisible)} 
               className="py-2 px-4 block" 

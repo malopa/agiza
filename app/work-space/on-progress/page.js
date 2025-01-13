@@ -1,11 +1,11 @@
 "use client"
-import { BASE, getClientGroupMembers, getClientGroupOrder, getMyRooms, getNewOrderByStatus, getSupplier, updateClientOrder, updateClientOrderGroupStatus } from '@/app/api/api';
+import { BASE, getClientGroupMembers, getClientGroupOrder, getMyRooms, getNewOrderByStatus, getSupplier, updateClientOrder, updateClientOrderGroupStatus, updateGroupOrderStatus } from '@/app/api/api';
 import { useAuth } from '@/app/context/authContext';
 import { useRoomContext } from '@/app/context/roomContext';
 import { getToken } from '@/app/utils/retrieveToken';
 import { EditOutlined, ExportOutlined, EyeOutlined, SendOutlined, SyncOutlined, UsergroupAddOutlined, UserOutlined } from '@ant-design/icons'
-import {useMutation, useQuery } from '@tanstack/react-query';
-import { Button, Checkbox, Modal, Radio, Select, Tooltip } from 'antd';
+import {useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Button, Checkbox, message, Modal, Radio, Select, Tag, Tooltip } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import React, { useEffect, useState } from 'react'
 
@@ -19,6 +19,8 @@ const options = [
 
 export default function page() {
 
+
+    const [messageApi, contextHolder] = message.useMessage();
     const {roomName,setRoomName} = useRoomContext();
     const [open, setOpen] = useState(false);
     const [status,setStatus] = useState(false)
@@ -40,6 +42,7 @@ export default function page() {
     const {data:suppliers} = useQuery({queryKey:['suppliers'],queryFn:async ()=> await getSupplier(token)})
   
 
+    const queryClient  = useQueryClient();
     const handleCancel = () => {
         setShowMerge(false);
         setOpen(false);
@@ -50,7 +53,7 @@ export default function page() {
 
     const handleStatus =(value)=>{
         // setShowMerge(false);
-        alert(value)
+        // alert(value)
     setStatus(value)
 
     }
@@ -59,6 +62,7 @@ export default function page() {
 
     const mutationUpdateGroup = useMutation({mutationFn:updateClientOrderGroupStatus,onSuccess:(data)=>{
       // alert(JSON.stringify(data))
+      
       setLoading(false);
       setOpen(false);
       setVisibleSupplier(false)
@@ -67,38 +71,57 @@ export default function page() {
     }})
 
     const mutation = useMutation({mutationFn:updateClientOrder,onSuccess:(data)=>{
-      alert(JSON.stringify(data))
+      queryClient.invalidateQueries("active-orders")
       setLoading(false);
       setOpen(false);
       setStatus("")
-      queryClient.invalidateQueries("new-orders")
     }})
+
+
+    const updateGroupStatusMutation = useMutation({mutationFn:updateGroupOrderStatus,onSuccess:(data)=>{
+      queryClient.invalidateQueries("active-orders")
+      queryClient.invalidateQueries("group-orders")
+      setLoading(false);
+      setOpen(false);
+      setStatus("")
+
+    }})
+
 
     const handleStatusOk = ()=>{
       setLoading(true);
-      let data = {id:order_id.id,client:order_id.client.id,product:order_id.product,status:status,token}
-      mutation.mutate(data)
+      // let data = {id:order_id.id,client:order_id.client.id,product:order_id.product,status:status,token}
+      // mutation.mutate(data)
+
+      // alert("status")
+      // return;
+      if(order_type === "product"){
+        let data = {id:order_id?.id,client:order_id?.client.id,product:order_id.id,status:status,token}
+        mutation.mutate(data)
+      }else{
+        // alert(JSON.stringify(activeGroup))
+        // return;
+        let data = {status,id:activeGroup.id,token}
+        updateGroupStatusMutation.mutate(data)
+      }
+
+
     }
 
     const handleOk = () => {
         // setLoading(true);
-
-        // let data = {orders:orders,token}
-        // alert(JSON.stringify(data))
-        // return;
+          
         if(order_type == "product"){
-          let data = {id:order_id.id,client:order_id.client.id,product:order_id.product,status:status,token}
+          let data = {id:order_id.id,client:order_id?.client.id,product:order_id.id,status:status,token}
+          mutation.mutate(data)
 
-          mutation.mutate(data)
         }else{
-          let data = {id:order_id.id,client:order_id.client.id,product:order_id.product,status:status,token}
-          mutation.mutate(data)
+          let data = {id:activeGroup.id,status:status,token}
+          // alert(JSON.stringify(data))
+          // return;
+          updateGroupStatusMutation.mutate(data)
         }
 
-        // setTimeout(() => {
-        //   setLoading(false);
-        //   setShowMerge(false);
-        // }, 3000);
 
       };
 
@@ -156,7 +179,7 @@ export default function page() {
                         {/* {JSON.stringify(group_orders)} */}
                       {group_orders?.results?.map((p,idx)=>{
                         return <li key={idx} onClick={()=>setRoomName(p.group_id)} className='cursor-pointer rounded-lg flex border-b items-center  border-gray-150 p-2'>
-                        <UsergroupAddOutlined /> <div className='ml-2 text-sm capitalize text-gray-500'><span className='font-bold'>{p?.group_id}</span> <span className='bg-green-400 rounded-md px-2'>{p?.status}   </span> <span className='uppercase mx-2 font-bold'>
+                        <UsergroupAddOutlined /> <div className='ml-2 text-sm capitalize text-gray-500'><span className='font-bold'>{p?.group_id}</span> <span className='px-2'>  <Tag color="orange">{p?.status}</Tag>  </span> <span className='uppercase mx-2 font-bold'>
                         {p?.supplier?.name?.length > 10
                         ? `${p.supplier.name.slice(0, 10)}...`
                         : p?.supplier?.name}
@@ -188,7 +211,7 @@ export default function page() {
                       {new_orders?.results?.map((p,idx)=>{
                         return <tr key={idx} className='bg-white border-b border-gray-200 px-2 py-1 m-2 rounded whitespace-normal  w-full ' >
                           <td className='p-2 capitalize'>{p.product}</td> 
-                          <td className='p-2'>{p.status}</td> 
+                          <td className='p-2'><Tag color="orange">{p.status}</Tag></td> 
                           <td className='p-2'>{p.days}</td> 
                           <td className='p-2'>{p.lag_id}</td>
                           <td className='p-2'><Button onClick={()=>{setOpen(true),setOrderId(p);setOrderType("product")}}><Tooltip title="Update order status"><EditOutlined /> </Tooltip></Button></td>
@@ -347,6 +370,8 @@ export default function page() {
         ]}
       >
        
+
+       {"order status"+JSON.stringify(order_type)}
 
         <div className='w-full my-2'>
             <label className='leading-8'>Update order status</label>

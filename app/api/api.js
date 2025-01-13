@@ -93,13 +93,27 @@ export const updateClientOrder = async (data)=>{
         headers:{
             "Content-Type":"application/json",
             "Authorization":"Bearer " +data.token
-        },
+        },  
         body:JSON.stringify(data)
     });
     const result = await res.json();
     return result;
 }
 
+
+export const updateGroupOrderStatus = async (data)=>{
+    const url = `${BASE_URL}cargo/api/v1/order_group/${data.id}/`;
+    const res = await fetch(url,{
+        method:"PUT",
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer " +data.token
+        },  
+        body:JSON.stringify(data)
+    });
+    const result = await res.json();
+    return result;
+}
 
 
 export const updateClientOrderGroupStatus = async (data)=>{
