@@ -179,7 +179,7 @@ export default function page() {
                         {/* {JSON.stringify(group_orders)} */}
                       {group_orders?.results?.map((p,idx)=>{
                         return <li key={idx} onClick={()=>setRoomName(p.group_id)} className='cursor-pointer rounded-lg flex border-b items-center  border-gray-150 p-2'>
-                        <UsergroupAddOutlined /> <div className='ml-2 text-sm capitalize text-gray-500'><span className='font-bold'>{p?.group_id}</span> <span className='px-2'>  <Tag color="orange">{p?.status}</Tag>  </span> <span className='uppercase mx-2 font-bold'>
+                        <UsergroupAddOutlined /> <div className='ml-2 text-sm capitalize text-gray-500'><span className='font-bold'>{p?.group_id}</span> <span className='px-2'>  <Tag color="green">{p?.status}</Tag>  </span> <span className='uppercase mx-2 font-bold'>
                         {p?.supplier?.name?.length > 10
                         ? `${p.supplier.name.slice(0, 10)}...`
                         : p?.supplier?.name}
@@ -211,7 +211,7 @@ export default function page() {
                       {new_orders?.results?.map((p,idx)=>{
                         return <tr key={idx} className='bg-white border-b border-gray-200 px-2 py-1 m-2 rounded whitespace-normal  w-full ' >
                           <td className='p-2 capitalize'>{p.product}</td> 
-                          <td className='p-2'><Tag color="orange">{p.status}</Tag></td> 
+                          <td className='p-2'><Tag color="green">{p.status}</Tag></td> 
                           <td className='p-2'>{p.days}</td> 
                           <td className='p-2'>{p.lag_id}</td>
                           <td className='p-2'><Button onClick={()=>{setOpen(true),setOrderId(p);setOrderType("product")}}><Tooltip title="Update order status"><EditOutlined /> </Tooltip></Button></td>
