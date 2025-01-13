@@ -1,8 +1,12 @@
-export const BASE = `http://192.168.169.141:8000/`;
+// export const BASE = `http://192.168.169.141:8000/`;
+export const BASE = `https://agiza.telladvert.com/`;
 //export const BASE = `ws://waza.goldtz.co.tz`;
 // http://127.0.0.1:8000/
-export const BASE_URL = `http://192.168.169.141:8000/`;
+// export const BASE_URL = `http://192.168.169.141:8000/`;
 //export const BASE_URL = `https://waza.goldtz.co.tz/api/v1/`;
+export const BASE_URL = `https://agiza.telladvert.com/`;
+
+
 
 
 export const getUsers = async (token)=>{
@@ -34,7 +38,7 @@ export const addClients = async (data)=>{
 
 
 export const getClientGroupOrder = async (data)=>{
-    const url = `${BASE_URL}cargo/api/v1/order_group/`;
+    const url = `${BASE_URL}cargo/api/v1/order_group_read/`;
     const res = await fetch(url,{
         method:"GET",
         headers:{
@@ -99,9 +103,9 @@ export const updateClientOrder = async (data)=>{
 
 
 export const updateClientOrderGroupStatus = async (data)=>{
-    const url = `${BASE_URL}cargo/api/v1/laguage/${data.id}/`;
+    const url = `${BASE_URL}cargo/api/v1/order_group_supplier/`;
     const res = await fetch(url,{
-        method:"PUT",
+        method:"POST",
         headers:{
             "Content-Type":"application/json",
             "Authorization":"Bearer " +data.token

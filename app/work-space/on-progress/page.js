@@ -3,7 +3,7 @@ import { BASE, getClientGroupMembers, getClientGroupOrder, getMyRooms, getNewOrd
 import { useAuth } from '@/app/context/authContext';
 import { useRoomContext } from '@/app/context/roomContext';
 import { getToken } from '@/app/utils/retrieveToken';
-import { EditOutlined, ExportOutlined, EyeOutlined, SendOutlined, UsergroupAddOutlined, UserOutlined } from '@ant-design/icons'
+import { EditOutlined, ExportOutlined, EyeOutlined, SendOutlined, SyncOutlined, UsergroupAddOutlined, UserOutlined } from '@ant-design/icons'
 import {useMutation, useQuery } from '@tanstack/react-query';
 import { Button, Checkbox, Modal, Radio, Select, Tooltip } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
@@ -36,8 +36,8 @@ export default function page() {
     let token = getToken();
     const {data:new_orders} = useQuery({queryKey:['active-orders'],queryFn:async ()=> await getNewOrderByStatus({token,status:'active'}) })
     const {data:group_orders} = useQuery({queryKey:['group-orders'],queryFn:async ()=> await getClientGroupOrder({token}) })
-    const {data:group_members} = useQuery({queryKey:['group-members',activeGroup?.group?.id],queryFn:async ()=> await getClientGroupMembers({token,group_id:activeGroup?.group?.id}),enabled:visibleGroup })
-    const {data:suppliers} = useQuery({queryKey:['suppliers',activeGroup?.group?.id],queryFn:async ()=> await getSupplier(token)})
+    const {data:group_members} = useQuery({queryKey:['group-members',activeGroup?.id],queryFn:async ()=> await getClientGroupMembers({token,group_id:activeGroup?.id}),enabled:visibleGroup })
+    const {data:suppliers} = useQuery({queryKey:['suppliers'],queryFn:async ()=> await getSupplier(token)})
   
 
     const handleCancel = () => {
@@ -49,17 +49,21 @@ export default function page() {
     };
 
     const handleStatus =(value)=>{
-        setShowMerge(false);
+        // setShowMerge(false);
+        alert(value)
+    setStatus(value)
+
     }
 
 
 
     const mutationUpdateGroup = useMutation({mutationFn:updateClientOrderGroupStatus,onSuccess:(data)=>{
-      alert(JSON.stringify(data))
+      // alert(JSON.stringify(data))
       setLoading(false);
       setOpen(false);
-      setStatus("")
-      queryClient.invalidateQueries("new-orders")
+      setVisibleSupplier(false)
+      setActiveGroup(null)
+      queryClient.invalidateQueries("group-orders")
     }})
 
     const mutation = useMutation({mutationFn:updateClientOrder,onSuccess:(data)=>{
@@ -79,10 +83,18 @@ export default function page() {
     const handleOk = () => {
         // setLoading(true);
 
-        let data = {orders:orders,token}
-        alert(JSON.stringify(data))
-        return;
-        // mutation.mutate(data)
+        // let data = {orders:orders,token}
+        // alert(JSON.stringify(data))
+        // return;
+        if(order_type == "product"){
+          let data = {id:order_id.id,client:order_id.client.id,product:order_id.product,status:status,token}
+
+          mutation.mutate(data)
+        }else{
+          let data = {id:order_id.id,client:order_id.client.id,product:order_id.product,status:status,token}
+          mutation.mutate(data)
+        }
+
         // setTimeout(() => {
         //   setLoading(false);
         //   setShowMerge(false);
@@ -95,18 +107,21 @@ export default function page() {
         setLoading(true);
 
         // let data = {orders:orders,token}
-        alert(JSON.stringify(activeGroup.group.id))
+        // alert(JSON.stringify(activeGroup.id))
         // return;
 
         // setLoading(true);
-        let data = {id:activeGroup.group.id,supplier,token}
+        let data = {group:activeGroup.id,supplier,token}
+        // alert(JSON.stringify(data))
+        // return;
+
         mutationUpdateGroup.mutate(data)
 
       };
 
       const onChange = (value)=>{
 
-        alert(JSON.stringify(value))
+        // alert(JSON.stringify(value))
         // if(orders.filter(p=>p.id === value.target.value).length === 0){
         //     let data = {id:value.target.value,lag_id:value.target.lag_id}
         //     setOrders(p=>[...p,data])
@@ -116,7 +131,7 @@ export default function page() {
 
 
       const onChangeGroupValue= (val)=>{
-        alert(JSON.stringify(val))
+        // alert(JSON.stringify(val))
         // if(orders.filter(p=>p.id === value.target.value).length === 0){
             // let data = {id:val.target.value,group:activeGroup.group.id,token}
             // alert(JSON.stringify(data))
@@ -133,6 +148,7 @@ export default function page() {
             <Button onClick={()=>setShowMerge(!showMerge)}>Merge Orders</Button>
       </div>
 
+{/* {JSON.stringify(activeGroup)} */}
       <div className='flex flex-col lg:flex-row mt-2 rounded-lg w-full'>
         
                     <ul className='w-full lg:w-[600px] overflow-y-scroll max-h-[20vh] lg:min-h-[60vh] bg-white'>
@@ -140,7 +156,15 @@ export default function page() {
                         {/* {JSON.stringify(group_orders)} */}
                       {group_orders?.results?.map((p,idx)=>{
                         return <li key={idx} onClick={()=>setRoomName(p.group_id)} className='cursor-pointer rounded-lg flex border-b items-center  border-gray-150 p-2'>
-                        <UsergroupAddOutlined /> <div className='ml-2 text-sm capitalize text-gray-500'><span className='font-bold'>{p?.group_id}</span> <span className='bg-green-400 rounded-md px-2'>{p?.status}   </span> <span className='uppercase'>{p?.supplier?.name}</span> <span className='mx-2 py-1 cursor-pointer' onClick={()=>{setVisibleGroup(!visibleGroup);setActiveGroup(p);}}><Tooltip title="View product"><EyeOutlined /></Tooltip></span> <span className='mx-2 cursor-pointer' onClick={()=>{setVisibleSupplier(!visibleSupplier);setActiveGroup(p);}}><Tooltip title="Assign to supplier"><ExportOutlined /></Tooltip></span></div>
+                        <UsergroupAddOutlined /> <div className='ml-2 text-sm capitalize text-gray-500'><span className='font-bold'>{p?.group_id}</span> <span className='bg-green-400 rounded-md px-2'>{p?.status}   </span> <span className='uppercase mx-2 font-bold'>
+                        {p?.supplier?.name?.length > 10
+                        ? `${p.supplier.name.slice(0, 10)}...`
+                        : p?.supplier?.name}
+                          </span> 
+                          <span className='mx-1 py-1 cursor-pointer' onClick={()=>{setVisibleGroup(true);setActiveGroup(p);}}><Tooltip title="View product"><EyeOutlined /></Tooltip></span> 
+                          <span className='mx-1 cursor-pointer' onClick={()=>{setVisibleSupplier(true);setActiveGroup(p);}}><Tooltip title="Assign to supplier"><ExportOutlined /></Tooltip></span>
+                          <span className='mx-1 cursor-pointer' onClick={()=>{setOpen(true);setActiveGroup(p);setOrderType("group")}}><Tooltip title="Update status"><SyncOutlined /></Tooltip></span>
+                          </div>
                         </li>
                       })}
                     </ul>
@@ -167,7 +191,7 @@ export default function page() {
                           <td className='p-2'>{p.status}</td> 
                           <td className='p-2'>{p.days}</td> 
                           <td className='p-2'>{p.lag_id}</td>
-                          <td className='p-2'><Button onClick={()=>{setOpen(!open),setOrderId(p);setOrderType("product")}}><Tooltip title="Update order status"><EditOutlined /> </Tooltip></Button></td>
+                          <td className='p-2'><Button onClick={()=>{setOpen(true),setOrderId(p);setOrderType("product")}}><Tooltip title="Update order status"><EditOutlined /> </Tooltip></Button></td>
                           </tr>;
                       })
                       }
