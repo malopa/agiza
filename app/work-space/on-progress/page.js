@@ -15,10 +15,10 @@ const options = [
     {"value":"active","label":"Active"},
     {"value":"assign to supplier","label":"assign to supplier"},
     {"value":"on ship","label":"on ship"},
+    {"value":"completed","label":"completed"},
   ]
 
 export default function page() {
-
 
     const [messageApi, contextHolder] = message.useMessage();
     const {roomName,setRoomName} = useRoomContext();
@@ -32,6 +32,7 @@ export default function page() {
     const [visibleSupplier,setVisibleSupplier] = useState(false) 
     const [visibleGroup,setVisibleGroup] = useState(false) 
     const [activeGroup,setActiveGroup] = useState()
+
     // const [value,setValue] = useState()
     const [supplier,setSupplier] = useState()
     
@@ -209,7 +210,7 @@ export default function page() {
                           </thead>
                           <tbody>
                       {new_orders?.results?.map((p,idx)=>{
-                        return <tr key={idx} className='bg-white border-b border-gray-200 px-2 py-1 m-2 rounded whitespace-normal  w-full ' >
+                        return <tr key={idx} className='bg-white border-b border-gray-200 px-2 py-1 m-2 rounded whitespace-normal  w-full' >
                           <td className='p-2 capitalize'>{p.product}</td> 
                           <td className='p-2'><Tag color="green">{p.status}</Tag></td> 
                           <td className='p-2'>{p.days}</td> 

@@ -5,7 +5,7 @@ import { useRoomContext } from '@/app/context/roomContext';
 import { getToken } from '@/app/utils/retrieveToken';
 import { EditOutlined, ExportOutlined, EyeOutlined, SendOutlined, SyncOutlined, UsergroupAddOutlined, UserOutlined } from '@ant-design/icons'
 import {useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Checkbox, message, Modal, Radio, Select, Tooltip } from 'antd';
+import { Button, Checkbox, message, Modal, Radio, Select, Tag, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react'
 
 
@@ -36,8 +36,8 @@ export default function page() {
     const [supplier,setSupplier] = useState()
     
     let token = getToken();
-    const {data:new_orders} = useQuery({queryKey:['active-orders'],queryFn:async ()=> await getNewOrderByStatus({token,status:'completed'}) })
-    const {data:group_orders} = useQuery({queryKey:['group-orders'],queryFn:async ()=> await getClientGroupOrder({token}) })
+    const {data:new_orders} = useQuery({queryKey:['completed-orders'],queryFn:async ()=> await getNewOrderByStatus({token,status:'completed'}) })
+    const {data:group_orders} = useQuery({queryKey:['group-orders'],queryFn:async ()=> await getClientGroupOrder({token,status:'completed'}) })
     const {data:group_members} = useQuery({queryKey:['group-members',activeGroup?.id],queryFn:async ()=> await getClientGroupMembers({token,group_id:activeGroup?.id}),enabled:visibleGroup })
     const {data:suppliers} = useQuery({queryKey:['suppliers'],queryFn:async ()=> await getSupplier(token)})
   
@@ -177,7 +177,7 @@ export default function page() {
                         {/* {JSON.stringify(group_orders)} */}
                       {group_orders?.results?.map((p,idx)=>{
                         return <li key={idx} onClick={()=>setRoomName(p.group_id)} className='cursor-pointer rounded-lg flex border-b items-center  border-gray-150 p-2'>
-                        <UsergroupAddOutlined /> <div className='ml-2 text-sm capitalize text-gray-500'><span className='font-bold'>{p?.group_id}</span> <span className='bg-green-400 rounded-md px-2'>{p?.status}   </span> <span className='uppercase mx-2 font-bold'>
+                        <UsergroupAddOutlined /> <div className='ml-2 text-sm capitalize text-gray-500'><span className='font-bold'>{p?.group_id}</span> <span className=''> <Tag color="green">{p?.status}</Tag> </span> <span className='uppercase mx-2 font-bold'>
                         {p?.supplier?.name?.length > 10
                         ? `${p.supplier.name.slice(0, 10)}...`
                         : p?.supplier?.name}
@@ -193,7 +193,7 @@ export default function page() {
                       <div className='px-2 font-bold capitalize'>
                       {roomName}</div>
                       
-                      <div className='lg:px-4 bg-white min-h-[45vh] lg:min-h-[60vh] w-full max-h-[40vh] lg:max-h-[60vh]'>
+                      <div className='lg:px-4 bg-white min-h-[45vh]  w-full max-h-[40vh] lg:max-h-[60vh]'>
                       <ul className='list-none w-full'>
                       <table className='mt-4'>
                           <thead className='bg-gray-200'>
@@ -209,7 +209,7 @@ export default function page() {
                       {new_orders?.results?.map((p,idx)=>{
                         return <tr key={idx} className='bg-white border-b border-gray-200 px-2 py-1 m-2 rounded whitespace-normal  w-full ' >
                           <td className='p-2 capitalize'>{p.product}</td> 
-                          <td className='p-2'>{p.status}</td> 
+                          <td className='p-2'><Tag color="green">{p.status}</Tag></td> 
                           <td className='p-2'>{p.days}</td> 
                           <td className='p-2'>{p.lag_id}</td>
                           <td className='p-2'><Button onClick={()=>{setOpen(true),setOrderId(p);setOrderType("product")}}><Tooltip title="Update order status"><EditOutlined /> </Tooltip></Button></td>

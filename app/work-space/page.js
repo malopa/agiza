@@ -9,7 +9,7 @@ import { BASE, getMyRooms, getNewOrder, getNewOrderByStatus, updateClientOrder }
 import { useChatRoomContext } from '../context/cahtRoomContext';
 import { useAuth } from '../context/authContext';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Modal, Select } from 'antd';
+import { Button, Modal, Select, Tag } from 'antd';
 import { getToken } from '../utils/retrieveToken';
 
 
@@ -20,6 +20,7 @@ const options = [
   {"value":"active","label":"Active"},
   {"value":"assign to supplier","label":"assign to supplier"},
   {"value":"on ship","label":"on ship"},
+  {"value":"completed","label":"completed"},
 ]
 
 export default function page() {
@@ -108,7 +109,7 @@ export default function page() {
                       {new_orders?.results?.map((p,idx)=>{
                         return <tr key={idx} className='bg-white border-b border-gray-200 px-2 py-1 m-2 rounded whitespace-normal  w-full ' >
                           <td className='p-2 capitalize'>{p.product}</td> 
-                          <td className='p-2'>{p.status}</td> 
+                          <td className='p-2'><Tag color="green"> {p.status} </Tag></td> 
                           <td className='p-2'>{p.days}</td> 
                           <td className='p-2'>{p.lag_id}</td>
                           <td className='p-2'><Button onClick={()=>{setOpen(!open),setOrderId(p)}}>Update</Button></td>
