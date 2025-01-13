@@ -52,70 +52,67 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-gray-100 flex items-center justify-center h-[90vh] font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col bg-white rounded mt-8 min-h-[20vh]  p-4 m-auto shadow-md items-center justify-center w-full p-2 lg:w-1/5">
-        <div className="flex items-center justify-start w-full mb-8 ">
-          <div style={{ position: "relative", width: "40px", height: "40px" }}>
-            <Image
-              src="/icon.png"
-              alt="Icon"
-              layout="fill"
-              objectFit="cover"
-            />
-          </div>
-          <div className="ml-2 font-bold">Agiza Log In</div>
-        </div>
-
-        <div className="w-full">
-          <label className="block leading-8">Username</label>
-          <Input
-            size="large"
-            placeholder="Enter your username"
-            prefix={<UserOutlined />}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-
-        <div className="mt-4 w-full">
-          <label className="block leading-8">Password</label>
-          <Input.Password
-            size="large"
-            placeholder="Enter your password"
-            className="w-full"
-            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-
-        <div className="flex justify-end w-full mt-6">
-
-          <Button
-            type="primary"
-            icon={<LoginOutlined />}
-            onClick={enterLoading}
-            disabled={!username || !password} // Disable button if fields are empty
-          >
-            Log In
-          </Button>
-        </div>
-
-
-
-        <Modal
-        title="Modal"
-        open={open}
-        onOk={hideModal}
-        onCancel={hideModal}
-        okText="Ok"
-        cancelText="Cancel"
-      >
-        <p>Wrong username / password</p>
-      </Modal>
-
-
-      </main>
+    <div className="bg-gray-100 flex items-center justify-center h-screen font-[family-name:var(--font-geist-sans)]">
+  <main className="flex flex-col bg-white rounded-lg shadow-md p-6 w-full max-w-md items-center">
+    {/* Logo Section */}
+    <div className="flex items-center justify-start w-full mb-6">
+      <div className="relative w-10 h-10">
+        <Image src="/icon.png" alt="Icon" layout="fill" objectFit="cover" />
+      </div>
+      <div className="ml-2 text-lg font-bold">Agiza Log In</div>
     </div>
+
+    {/* Username Input */}
+    <div className="w-full mb-4">
+      <label className="block mb-2 text-sm font-medium text-gray-700">Username</label>
+      <Input
+        size="large"
+        placeholder="Enter your username"
+        prefix={<UserOutlined />}
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+    </div>
+
+    {/* Password Input */}
+    <div className="w-full mb-6">
+      <label className="block mb-2 text-sm font-medium text-gray-700">Password</label>
+      <Input.Password
+        size="large"
+        placeholder="Enter your password"
+        className="w-full"
+        iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+    </div>
+
+    {/* Log In Button */}
+    <div className="w-full">
+      <Button
+        type="primary"
+        icon={<LoginOutlined />}
+        onClick={enterLoading}
+        disabled={!username || !password} // Disable button if fields are empty
+        className="w-full"
+      >
+        Log In
+      </Button>
+    </div>
+
+    {/* Error Modal */}
+    <Modal
+      title="Login Error"
+      open={open}
+      onOk={hideModal}
+      onCancel={hideModal}
+      okText="Ok"
+      cancelText="Cancel"
+    >
+      <p>Wrong username / password</p>
+    </Modal>
+  </main>
+</div>
+
   );
 }

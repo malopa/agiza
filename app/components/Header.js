@@ -45,7 +45,7 @@ export default function Header() {
               href={`/Suppliers`}>Suppliers</Link>
             </li>
           <li><Link  className="mx-2 p-2" href={`/work-space`}>Work space</Link></li>
-          <li><Link  className="mx-2 p-2" href={`/notifications`}>Notifications</Link></li>
+          <li><Link  className="mx-2 p-2" href={`/notifications`}>Settings</Link></li>
           
           <li className='ml-4'><Logout /></li>
         </ul>
@@ -83,7 +83,7 @@ export default function Header() {
                 <Link onClick={()=>setIsVisible(!isVisible)} 
                 className="py-2 px-4 block" href={`/chats`}>Work space</Link></li>
               <li><Link onClick={()=>setIsVisible(!isVisible)} 
-              className="py-2 px-4 block " href={`/notifications`}>Notifications</Link></li>
+              className="py-2 px-4 block " href={`/notifications`}>Settings</Link></li>
               <li><Link onClick={()=>setIsVisible(!isVisible)} 
               className="py-2 py-2 px-4 block " href={`/shops`}>Shops</Link></li>
               <li className='m-2 p-2'><Logout /></li>
