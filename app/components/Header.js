@@ -36,7 +36,7 @@ export default function Header() {
         </div>
 
 
-        <ul className="hidden w-3/4 lg:flex items-center mr-4">
+        <ul className="hidden bg-[#6F96BD] w-3/4 lg:flex items-center mr-4">
           <li><Link   className="mx-2 p-2" href={`/dashboard`}>Dashboard</Link></li>
           <li><Link  className="mx-2 p-2" href={`/client`}>Clients</Link></li>
           <li>
@@ -45,7 +45,7 @@ export default function Header() {
               href={`/Suppliers`}>Suppliers</Link>
             </li>
           <li><Link  className="mx-2 p-2" href={`/work-space`}>Work space</Link></li>
-          <li><Link  className="mx-2 p-2" href={`/settings`}>Settings</Link></li>
+          <li><Link  className="mx-2 p-2" href={`/settings`}>Settings -- </Link></li>
           
           <li className='ml-4'><Logout /></li>
         </ul>
@@ -56,10 +56,10 @@ export default function Header() {
         </div>
 
         <div className={`${
-      isVisible ? 'block' : 'hidden'
-    } absolute z-20 top-10 mt-4 w-full bg-blue-400 right-0`}
-    >
-          <ul className="text-left w-full">
+          isVisible ? 'block' : 'hidden'
+        } absolute z-20 top-10 mt-4 w-full bg-blue-400 right-0`}
+        >
+          <ul className="text-left w-full bg-[#6F96BD]">
               <li>
                 <Link 
                   onClick={()=>setIsVisible(!isVisible)} 
@@ -81,12 +81,13 @@ export default function Header() {
 
               <li>
                 <Link onClick={()=>setIsVisible(!isVisible)} 
-                className="py-2 px-4 block" href={`/chats`}>Work space</Link></li>
+                className="py-2 px-4 block" href={`/work-space`}>Work space</Link></li>
               <li><Link onClick={()=>setIsVisible(!isVisible)} 
-              className="py-2 px-4 block " href={`/notifications`}>Settings</Link></li>
-              <li><Link onClick={()=>setIsVisible(!isVisible)} 
-              className="py-2 py-2 px-4 block " href={`/shops`}>Shops</Link></li>
-              <li className='m-2 p-2'><Logout /></li>
+              className="py-2 px-4 block " href={`/settings`}>Settings</Link></li>
+              
+              <li className='ml-4 py-2'><Logout /></li>
+
+              
           </ul>
         </div>
 

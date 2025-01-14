@@ -42,11 +42,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+       className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100 min-h-screen`}
       >
         <Head>
         <title>agiza-server</title>
-        <meta property="og:title" content="afiza" key="agiza"/>
+        <meta property="og:title" content="agiza" key="agiza"/>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -66,7 +66,6 @@ export default function RootLayout({ children }) {
           </UserContextProvider>
         </QueryClientProvider>
 
-        <Footer />
       </body>
     </html>
   );

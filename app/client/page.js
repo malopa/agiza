@@ -7,6 +7,7 @@ import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, message, Modal, Select, Space, Spin, Table } from 'antd';
 import { getToken } from '../utils/retrieveToken'
 import Highlighter from 'react-highlight-words'
+import Footer from '../Footer'
 
 
 const onChange = (pagination, filters, sorter, extra) => {
@@ -315,7 +316,7 @@ export default function page() {
             <div className='font-bold my-4   uppercase'>Clients</div>
               <Button onClick={showModal}>Register Client</Button>
           </div>
-          <div className='bg-white rounded-md w-full'>
+          <div className='bg-white rounded-md w-full overflow-y-auto mx-2 lg:mx-0'>
               {isLoading ? <Spin indicator={<LoadingOutlined spin />} size="large" />:
               <Table className='bg-white w-full rounded-md' columns={columns} dataSource={users?.results} onChange={onChange} />
               }
@@ -454,6 +455,7 @@ export default function page() {
 
       </Modal>
 
+          <Footer />
 
     </div>
   )

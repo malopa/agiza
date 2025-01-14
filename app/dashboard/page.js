@@ -10,6 +10,7 @@ import { useAuth } from '../context/authContext'
 import { getToken } from '../utils/retrieveToken'
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import Footer from '../Footer'
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -82,9 +83,9 @@ export default function page() {
 
 
   return (
-    <div className="w-full bg-gray-100 min-h-screen">
+    <div className="w-full bg-gray-100 min-[80vh]">
       <Header />
-      <div className="min-h-[63vh] p-6"> {/* Reduced the height */}
+      <div className="min-h-[63vh] p-6 bg-gray-100"> {/* Reduced the height */}
         {/* Dashboard Overview */}
         <div className="text-center text-2xl font-bold mb-8">Dashboard Overview</div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:w-3/4 mx-auto">
@@ -130,7 +131,7 @@ export default function page() {
         </div>
 
         {/* Other sections */}
-        <div className="m-auto lg:w-3/4 text-xl font-bold">More Stats</div>
+        <div className="m-auto lg:w-3/4 mt-4 text-xl font-bold">More Stats</div>
         <div className="flex flex-col lg:flex-row w-full cursor-pointer m-auto lg:w-3/4 h-32 origin-center hover:scale-1">
           <div className="shadow-md bg-white w-[300px] p-3 m-4 rounded-md">
             <div className="border-b border-b-1 py-2">Total Placed Orders</div>
@@ -153,6 +154,10 @@ export default function page() {
           </div>
         </div>
       </div>
+
+        <Footer />
+
+
     </div>
   )
 }
