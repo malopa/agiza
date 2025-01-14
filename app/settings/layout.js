@@ -30,7 +30,7 @@ export default function ChatLayout({children}) {
 {/* when it is on large screen */}
         <div className='flex flex bg-gray-100'>
             
-            <div className='w-full  w-1/5 hidden lg:flex lg:flex-col lg:border-r lg:border-gray-200 lg:flex-col mb-4'>
+            <div className='w-full  lg:w-1/5 hidden lg:flex lg:flex-col lg:border-r lg:border-gray-200 lg:flex-col mb-4'>
                 <ul className='flex lg:flex-col items-center bg-white rounded-xl lg:min-h-[60vh] justify-start lg:max-h-[60vh]'>
                     <li className='border-b border-gray-200 w-full'><Link  className='py-3 block w-full cursor-pointer px-4 hover:bg-blue-100 eas-in-out duration-200 text-sm' href={`/settings`}>Staff Members</Link></li>
                     <li className='border-b border-gray-200 w-full'><Link className='py-3 block w-full cursor-pointer hover:bg-blue-100 px-4 eas-in-out duration-200 text-sm' href={`/settings/roles`}>Roles</Link></li>
@@ -41,7 +41,7 @@ export default function ChatLayout({children}) {
 
             </div>
 
-            <div className='w-4/5  py-4'>
+            <div className='w-full lg:w-4/5  py-4'>
                 {children}
             </div>
         </div>
