@@ -1,9 +1,9 @@
-export const BASE = `http://192.168.169.141:8000/`;
-// export const BASE = `https://agiza.telladvert.com/`;
+// export const BASE = `http://192.168.169.141:8000/`;
+export const BASE = `https://agiza.telladvert.com/`;
 //export const BASE = `ws://waza.goldtz.co.tz`;
 // http://127.0.0.1:8000/
-export const BASE_URL = `http://192.168.169.141:8000/`;
-//export const BASE_URL = `https://waza.goldtz.co.tz/api/v1/`;
+// export const BASE_URL = `http://192.168.169.141:8000/`;
+export const BASE_URL = `https://waza.goldtz.co.tz/api/v1/`;
 // export const BASE_URL = `https://agiza.telladvert.com/`;
 
 
@@ -41,7 +41,6 @@ export const getClientGroupOrder = async (data)=>{
     let url = `${BASE_URL}cargo/api/v1/order_group_read/`;
     if(data?.status == "completed"){
         url = `${BASE_URL}cargo/api/v1/order_group_read/?status=${data?.status}`;
-
     }
     const res = await fetch(url,{
         method:"GET",

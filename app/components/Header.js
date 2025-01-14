@@ -40,7 +40,7 @@ export default function Header() {
           <li><Link   className="mx-2 p-2" href={`/dashboard`}>Dashboard</Link></li>
           <li><Link  className="mx-2 p-2" href={`/client`}>Clients</Link></li>
           <li>
-            <Link  onClick={()=>setIsVisible(!isVisible)} 
+            <Link   
               className="py-2 px-4 block" 
               href={`/Suppliers`}>Suppliers</Link>
             </li>
@@ -57,7 +57,7 @@ export default function Header() {
 
         <div className={`${
       isVisible ? 'block' : 'hidden'
-    } absolute z-20 top-10 mt-4 w-full right-0`}
+    } absolute z-20 top-10 mt-4 w-full bg-blue-400 right-0`}
     >
           <ul className="text-left w-full">
               <li>

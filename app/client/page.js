@@ -1,11 +1,12 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Header from '../components/Header'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { addClientOrder, addClients, getClients, getRegions, getUsers } from '../api/api'
-import { LoadingOutlined } from '@ant-design/icons';
-import { Button, Input, message, Modal, Select, Spin, Table } from 'antd';
+import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Input, message, Modal, Select, Space, Spin, Table } from 'antd';
 import { getToken } from '../utils/retrieveToken'
+import Highlighter from 'react-highlight-words'
 
 
 const onChange = (pagination, filters, sorter, extra) => {
@@ -20,6 +21,8 @@ const order_types = [
 
 export default function page() {
   let token = getToken();
+
+  
   const {data:users,isLoading} = useQuery({queryKey:['clients'],queryFn:async ()=>await getClients(token)})
   const {data:regions} = useQuery({queryKey:['regions'],queryFn:async ()=>await getRegions(token)})
   // alert(JSON.stringify(regions))
@@ -54,7 +57,6 @@ export default function page() {
 
   const mutation = useMutation({
     mutationFn:addClients,onSuccess:(data)=>{
-      // alert(JSON.stringify(data))
       setName("")
       setPhoneNumber("")
       setLocation("")
@@ -62,6 +64,8 @@ export default function page() {
       setLoading(false);
       setOpen(false);
       queryClient.invalidateQueries("clients")
+
+      showMessage('Client added successfully');
 
     }
   })
@@ -79,7 +83,6 @@ export default function page() {
 
   const orderMutation = useMutation({
     mutationFn:addClientOrder,onSuccess:(data)=>{
-      alert(JSON.stringify(data))
       // messageApi.info('Added successfully!');
       setProduct("")
       setOrderType("")
@@ -88,26 +91,171 @@ export default function page() {
       setOpenLaguage(false);
       queryClient.invalidateQueries("new-orders")
 
+      showMessage('Order added successfully');
+
+
     }
   })
+
+
+  const showMessage = (msg) => {
+    messageApi.open({
+      type: 'success',
+      content: `${msg}`,
+      duration: 10,
+    });
+  };
+
 
   const handleOrderOk = () => {
     setLoading(true);
     let data = {client:client_id,product,days:days,order_type,token}
-    alert(JSON.stringify(data))
+    // alert(JSON.stringify(data))
     orderMutation.mutate(data)
    
   };
 
   const handleCancel = () => {
     setOpen(false);
+    setLoading(false);
   };
 
 
   const handleOrderCancel = () => {
     setOpenLaguage(false);
+    setLoading(false);
   };
 
+
+  
+
+  const deleteData = ()=>{
+
+  }
+
+
+  const handleRegion =(value)=>{
+    setRegion(value)
+  }
+
+
+  const handleOrderType =(value)=>{
+    setOrderType(value)
+  }
+
+
+
+  // table search 
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const searchInput = useRef(null);
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText('');
+  };
+
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({
+                closeDropdown: false,
+              });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              close();
+            }}
+          >
+            close
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1677ff' : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    filterDropdownProps: {
+      onOpenChange(open) {
+        if (open) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: '#ffc069',
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ''}
+        />
+      ) : (
+        text
+      ),
+  });
+  // end table search 
 
   const columns = [
     {
@@ -116,22 +264,22 @@ export default function page() {
       filterMode: 'tree',
       filterSearch: true,
       width: '30%',
-      key:'id'
+      key:'id',
+      ...getColumnSearchProps('name')
     },
     {
       title: 'Phone Number',
       dataIndex: 'phone_number',
-      key:'phone_number'
+      key:'phone_number',
+      ...getColumnSearchProps('phone_number')
     },
     {
       title: 'Address',
       dataIndex: 'location',
-      key:'location'
     },
     {
       title: 'Registration Date',
       dataIndex: 'created_at',
-      key:'created_at'
     },
     {
       title: 'Region',
@@ -154,32 +302,24 @@ export default function page() {
   
   ];
 
-  const deleteData = ()=>{
-
-  }
-
-
-  const handleRegion =(value)=>{
-    setRegion(value)
-  }
-
-
-  const handleOrderType =(value)=>{
-    setOrderType(value)
-  }
 
   return (
     <div>
       <Header />
-      <div className='min-h-[80vh] mt-4'>
-        <div className='w-full p-2 lg:w-3/4 m-auto bg-white ' >
-        <div className='flex justify-between bg-white items-center my-4-'>
-          <div className='font-bold my-4   uppercase'>Clients</div>
-          <Button onClick={showModal}>Register Client</Button>
-        </div>
-          {isLoading ? <Spin indicator={<LoadingOutlined spin />} size="large" />:
-          <Table className='bg-white' columns={columns} dataSource={users?.results} onChange={onChange} />
-          }
+
+      {contextHolder}
+
+      <div className='min-h-[80vh] mt-4 bg-gray-100'>
+        <div className='w-full p-2 lg:w-3/4 m-auto ' >
+          <div className='flex justify-between bg-white px-2 rounded-md items-center my-4'>
+            <div className='font-bold my-4   uppercase'>Clients</div>
+              <Button onClick={showModal}>Register Client</Button>
+          </div>
+          <div className='bg-white rounded-md w-full'>
+              {isLoading ? <Spin indicator={<LoadingOutlined spin />} size="large" />:
+              <Table className='bg-white w-full rounded-md' columns={columns} dataSource={users?.results} onChange={onChange} />
+              }
+          </div>
         </div>
       </div>
 

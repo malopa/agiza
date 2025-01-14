@@ -14,6 +14,7 @@ import { getToken } from "./utils/retrieveToken";
 export default function Home() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const { setRefresh } = useAuth();
 
@@ -35,9 +36,11 @@ export default function Home() {
     }
 
     if(username && password){
-
+      setLoading(true)
       let data = {username:username,password:password}
       let {access,refresh} = await login(data)
+      setLoading(false)
+
       // let response = await login(data)
       // alert(JSON.stringify(response))
       // return;
@@ -95,6 +98,7 @@ export default function Home() {
         onClick={enterLoading}
         disabled={!username || !password} // Disable button if fields are empty
         className="w-full"
+        loading={loading}
       >
         Log In
       </Button>
@@ -107,6 +111,7 @@ export default function Home() {
       onOk={hideModal}
       onCancel={hideModal}
       okText="Ok"
+
       cancelText="Cancel"
     >
       <p>Wrong username / password</p>
