@@ -17,6 +17,7 @@ import { RoomContextProvider } from "./context/roomContext";
 import { ChatRoomContextProvider } from "./context/cahtRoomContext";
 import { AuthProvider } from "./context/authContext";
 import { MenuProvider } from "./context/menuContext";
+import Head from "next/head";
 
 const queryClient = new QueryClient()
 
@@ -43,6 +44,12 @@ export default function RootLayout({ children }) {
       <body
        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Head>
+        <title>agiza-server</title>
+        <meta property="og:title" content="afiza" key="agiza"/>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
         <QueryClientProvider client={queryClient}>
           <UserContextProvider>
             <RoomContextProvider>

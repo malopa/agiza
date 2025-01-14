@@ -1,10 +1,10 @@
-// export const BASE = `http://192.168.169.141:8000/`;
+// export const BASE = `http://192.168.176.141:8000/`;
 export const BASE = `https://agiza.telladvert.com/`;
 //export const BASE = `ws://waza.goldtz.co.tz`;
 // http://127.0.0.1:8000/
-// export const BASE_URL = `http://192.168.169.141:8000/`;
-export const BASE_URL = `https://waza.goldtz.co.tz/api/v1/`;
-// export const BASE_URL = `https://agiza.telladvert.com/`;
+// export const BASE_URL = `http://192.168.176.141:8000/`;
+// export const BASE_URL = `https://waza.goldtz.co.tz/api/v1/`;
+export const BASE_URL = `https://agiza.telladvert.com/`;
 
 
 
@@ -19,6 +19,22 @@ export const getUsers = async (token)=>{
     });
     const data = await res.json();
     return data;
+}
+
+
+
+export const addUsers = async (data)=>{
+    const url = `${BASE_URL}api/v1/users/`;
+    const res = await fetch(url,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer " +data.token
+        },
+        body:JSON.stringify(data)
+    });
+    const result = await res.json();
+    return result;
 }
 
 
@@ -118,6 +134,20 @@ export const updateGroupOrderStatus = async (data)=>{
     return result;
 }
 
+
+export const updateClientOrderIndividualStatus = async (data)=>{
+    const url = `${BASE_URL}cargo/api/v1/laguage_supplier/`;
+    const res = await fetch(url,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer " +data.token
+        },
+        body:JSON.stringify(data)
+    });
+    const result = await res.json();
+    return result;
+}
 
 export const updateClientOrderGroupStatus = async (data)=>{
     const url = `${BASE_URL}cargo/api/v1/order_group_supplier/`;

@@ -14,7 +14,7 @@ export default function Header() {
     <Head>
         <title>agiza-server</title>
         <meta property="og:title" content="wazaxom" key="wazacom" />
-        <link rel="icon" href="/icon.png" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       
       <div className="relative bg-[#6F96BD] h-[4rem] text-center text-white flex justify-end items-center w-full p-2">
@@ -45,7 +45,7 @@ export default function Header() {
               href={`/Suppliers`}>Suppliers</Link>
             </li>
           <li><Link  className="mx-2 p-2" href={`/work-space`}>Work space</Link></li>
-          <li><Link  className="mx-2 p-2" href={`/notifications`}>Settings</Link></li>
+          <li><Link  className="mx-2 p-2" href={`/settings`}>Settings</Link></li>
           
           <li className='ml-4'><Logout /></li>
         </ul>

@@ -1,5 +1,5 @@
 "use client"
-import { BASE, getClientGroupMembers, getClientGroupOrder, getMyRooms, getNewOrderByStatus, getSupplier, updateClientOrder, updateClientOrderGroupStatus, updateGroupOrderStatus } from '@/app/api/api';
+import { BASE, getClientGroupMembers, getClientGroupOrder, getMyRooms, getNewOrderByStatus, getSupplier, updateClientOrder, updateClientOrderGroupStatus, updateClientOrderIndividualStatus, updateGroupOrderStatus } from '@/app/api/api';
 import { useAuth } from '@/app/context/authContext';
 import { useRoomContext } from '@/app/context/roomContext';
 import { getToken } from '@/app/utils/retrieveToken';
@@ -45,12 +45,14 @@ export default function page() {
   
 
     const queryClient  = useQueryClient();
+
     const handleCancel = () => {
         setShowMerge(false);
         setOpen(false);
         setVisibleGroup(false)
         setVisibleSupplier(false)
         setLoading(false)
+        
     };
 
     const handleStatus =(value)=>{
@@ -62,14 +64,36 @@ export default function page() {
 
 
 
+    const showMessage = (msg) => {
+      messageApi.open({
+        type: 'success',
+        content: `${msg}`,
+        duration: 10,
+      });
+    };
+
     const mutationUpdateGroup = useMutation({mutationFn:updateClientOrderGroupStatus,onSuccess:(data)=>{
-      // alert(JSON.stringify(data))
-      
       setLoading(false);
       setOpen(false);
+      setOrderType("")
       setVisibleSupplier(false)
       setActiveGroup(null)
+      
       queryClient.invalidateQueries("group-orders")
+      showMessage('Assigned successfully');
+
+    }})
+
+
+    const mutationUpdateSingleOrder = useMutation({mutationFn:updateClientOrderIndividualStatus,onSuccess:(data)=>{
+      setLoading(false);
+      setOpen(false);
+      setOrderType("")
+      setVisibleSupplier(false)
+      setActiveGroup(null)
+      queryClient.invalidateQueries("active-orders")
+      showMessage('Assigned successfully');
+
     }})
 
     const mutation = useMutation({mutationFn:updateClientOrder,onSuccess:(data)=>{
@@ -77,6 +101,8 @@ export default function page() {
       setLoading(false);
       setOpen(false);
       setStatus("")
+      showMessage('Updated successfully');
+      setOrderType("")
     }})
 
 
@@ -86,6 +112,8 @@ export default function page() {
       setLoading(false);
       setOpen(false);
       setStatus("")
+      setOrderType("")
+      showMessage('Updated successfully');
 
     }})
 
@@ -127,18 +155,24 @@ export default function page() {
 
 
       const handleSupplierOk = () => {
-        setLoading(true);
 
         // let data = {orders:orders,token}
         // alert(JSON.stringify(activeGroup.id))
         // return;
 
         // setLoading(true);
-        let data = {group:activeGroup.id,supplier,token}
+        if(order_type === "group"){
+          let data = {group:activeGroup.id,supplier,token}
+          setLoading(true);
+
+          mutationUpdateGroup.mutate(data)
+      }else{
+        let data = {laguage:activeGroup.id,supplier,token}
         // alert(JSON.stringify(data))
         // return;
-
-        mutationUpdateGroup.mutate(data)
+        // setLoading(true);
+        mutationUpdateSingleOrder.mutate(data)
+      }
 
       };
 
@@ -298,7 +332,7 @@ export default function page() {
       key: 'x',
       render: (text,record) => <div>
         <span className='mx-1 py-1 cursor-pointer' onClick={()=>{setVisibleGroup(true);setActiveGroup(record);}}><Tooltip title="View product"><EyeOutlined /></Tooltip></span> 
-                          <span className='mx-1 cursor-pointer' onClick={()=>{setVisibleSupplier(true);setActiveGroup(record);}}><Tooltip title="Assign to supplier"><ExportOutlined /></Tooltip></span>
+                          <span className='mx-1 cursor-pointer' onClick={()=>{setVisibleSupplier(true);setActiveGroup(record);setOrderType("group")}}><Tooltip title="Assign to supplier"><ExportOutlined /></Tooltip></span>
                           <span className='mx-1 cursor-pointer' onClick={()=>{setOpen(true);setActiveGroup(record);setOrderType("group")}}><Tooltip title="Update status"><SyncOutlined /></Tooltip></span>
       </div>,
       width: '20%',
@@ -311,13 +345,12 @@ export default function page() {
   const columns2 = [
     {
       title: 'Order ID',
-      dataIndex: 'lag_id',
+      dataIndex: 'lag_id',  // This will use the 'lag_id' key in your row data
       filterMode: 'tree',
       filterSearch: true,
       width: '20%',
-      key:'lag_id',
-      render:(text,record)=><span><Tooltip title={`${record.product}`}>{record.lag_id}</Tooltip></span>,
-      ...getColumnSearchProps('lag_id')
+      key: 'lag_id',
+      ...getColumnSearchProps('lag_id'),
     },
     {
       title: 'Status',
@@ -341,8 +374,8 @@ export default function page() {
       title: 'Action',
       dataIndex: '',
       key: 'x',
-      render: (text,record) => <div>
-                          <span className='mx-1 cursor-pointer' onClick={()=>{setVisibleSupplier(true);setActiveGroup(record);}}><Tooltip title="Assign to supplier"><ExportOutlined /></Tooltip></span>
+      render: (text,record) => <div key={record.id}>
+                          <span className='mx-1 cursor-pointer' onClick={()=>{setVisibleSupplier(true);setActiveGroup(record);setOrderType("product")}}><Tooltip title="Assign to supplier"><ExportOutlined /></Tooltip></span>
                           <span className='mx-1 cursor-pointer' onClick={()=>{setOpen(true);setActiveGroup(record);setOrderType("product")}}><Tooltip title="Update status"><SyncOutlined /></Tooltip></span>
       </div>,
       width: '20%',
@@ -357,10 +390,10 @@ export default function page() {
             <div className='uppercase'>Active Orders</div>
             <Button onClick={()=>setShowMerge(!showMerge)}>Merge Orders</Button>
       </div>
-
+      {contextHolder}
       <div className='flex flex-col lg:flex-row mt-2 ml-[-4px] mr-0 rounded-lg w-full'>
         
-                    <ul className='w-full lg:w-1/2 overflow-y-scroll rounded-md max-h-[20vh] lg:min-h-[60vh] bg-white'>
+                    <ul className='w-full lg:w-1/2 overflow-y-scroll rounded-md min-h-[45vh] lg:max-h-[60vh] bg-white'>
                         <div className='uppercase font-bold p-3'>Package Orders</div>
                         
 
@@ -381,7 +414,9 @@ export default function page() {
 
                       <div className='bg-white rounded-md w-full flex items-center justify-center'>
                           {isNewOrderLoading ? <Spin indicator={<LoadingOutlined spin />} size="large" />:
-                          <Table className='bg-white w-full rounded-md' columns={columns2} dataSource={new_orders?.results}  />
+                          <Table className='bg-white w-full rounded-md' columns={columns2} 
+                          rowKey="lag_id"
+                          dataSource={new_orders?.results}  />
                           }
                       </div>
 
@@ -488,7 +523,7 @@ export default function page() {
             Cancel
           </Button>,
           <Button key="submit" type="primary" loading={loading} onClick={()=>handleSupplierOk()}>
-            Assign -- 
+            Assign 
           </Button>,
           
         ]}
@@ -500,9 +535,8 @@ export default function page() {
 
                   {suppliers?.results?.map((p,idx)=>{
                         return(   
-                        // <div className='py-2 border-b border-gray-200' key={p.id}><Checkbox  value={p.id} onChange={(e)=>setSupplier(e.target.value)}>{p.name}</Checkbox> 
-                        // </div>
-                         <div><Radio key={idx} value={p.id}>{p.name}</Radio></div>  
+                        
+                         <div key={idx}><Radio  value={p.id}>{p.name}</Radio></div>  
                         )
                       })
                       }

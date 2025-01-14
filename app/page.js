@@ -9,6 +9,7 @@ import { useAuth } from "./context/authContext";
 import { login } from "./api/api";
 import { saveToken } from "./utils/saveToken";
 import { getToken } from "./utils/retrieveToken";
+import Head from "next/head";
  
 
 export default function Home() {
@@ -56,6 +57,11 @@ export default function Home() {
 
   return (
     <div className="bg-gray-100 flex items-center justify-center h-screen font-[family-name:var(--font-geist-sans)]">
+       <Head>
+        <title>agiza-Login</title>
+        <meta property="og:title" content="wazaxom" key="wazacom" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
   <main className="flex flex-col bg-white rounded-lg shadow-md p-6 w-full max-w-md items-center">
     {/* Logo Section */}
     <div className="flex items-center justify-start w-full mb-6">
